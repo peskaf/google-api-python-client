@@ -1113,37 +1113,6 @@ def createMethod(methodName, methodDesc, rootDesc, schema):
                 ):
                     raise TypeError('Missing required parameter "%s"' % name)
 
-        for name, regex in parameters.pattern_params.items():
-            if name in kwargs:
-                if isinstance(kwargs[name], str):
-                    pvalues = [kwargs[name]]
-                else:
-                    pvalues = kwargs[name]
-                for pvalue in pvalues:
-                    if re.match(regex, pvalue) is None:
-                        raise TypeError(
-                            'Parameter "%s" value "%s" does not match the pattern "%s"'
-                            % (name, pvalue, regex)
-                        )
-
-        for name, enums in parameters.enum_params.items():
-            if name in kwargs:
-                # We need to handle the case of a repeated enum
-                # name differently, since we want to handle both
-                # arg='value' and arg=['value1', 'value2']
-                if name in parameters.repeated_params and not isinstance(
-                    kwargs[name], str
-                ):
-                    values = kwargs[name]
-                else:
-                    values = [kwargs[name]]
-                for value in values:
-                    if value not in enums:
-                        raise TypeError(
-                            'Parameter "%s" value "%s" is not an allowed value in "%s"'
-                            % (name, value, str(enums))
-                        )
-
         actual_query_params = {}
         actual_path_params = {}
         for key, value in kwargs.items():
